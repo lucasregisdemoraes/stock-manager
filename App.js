@@ -1,112 +1,69 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import Item from './components/item';
+import Header from './components/header';
+import ItemsMenu from './components/itemsMenu';
+import Form from './components/form';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const App = () => {
+  const [darkMode, setDarkMode] = useState(true);
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+  const [items, setItems] = useState([]);
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [list, setList] = useState([]);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const [formData, setFormData] = useState('none');
+
+  const [orderBy, setOrderBy] = useState("name");
+
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: darkMode ? "#444" : "#ccc",
+      flex: 1,
+    },
+    itemsContainer: {
+      flex: 1,
+    },
+  });
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <Header
+        setDarkMode={setDarkMode} darkMode={darkMode}
+        setOrderBy={setOrderBy} orderBy={orderBy}
+      />
+
+      <ItemsMenu
+        darkMode={darkMode}
+        items={items}
+        setList={setList} list={list}
+        setFormData={setFormData} formData={formData}
+        orderBy={orderBy}
+      />
+
+      <View style={styles.itemsContainer}>
+        <FlatList
+          contentContainerStyle={{ paddingBottom: 10 }}
+          data={list}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => (
+            <Item
+              darkMode={darkMode}
+              setFormData={setFormData}
+              data={item}
+            />
+          )}
+        />
+      </View>
+
+      <Form
+        darkMode={darkMode}
+        setFormData={setFormData} formData={formData}
+        setItems={setItems} items={items}
+      />
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
